@@ -45,7 +45,7 @@ def make_forecast_plot(y_connected, means, stds, target_names, target=1, outname
         lw=0.2,
     )
 
-    fig.legend(loc="upper left")
+    ax.legend(loc="upper left")
     # ax.vlines(x_conncected[2704], -0.25, 1.0, color="gray")
     # ax.vlines(x_conncected[4056], -0.15, 1.0, color="gray")
     # # plt.xticks([])

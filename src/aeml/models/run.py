@@ -27,7 +27,7 @@ def run_model(
         batch_size=batch_size,
         n_epochs=n_epochs,
         log_tensorboard=False,
-        optimzer_kwargs={"lr": lr},
+        optimizer_kwargs={"lr": lr},
     )
 
     model_cov.fit(series=y_train, past_covariates=x_train, verbose=False)

@@ -9,7 +9,7 @@ import numpy as np
 import logging
 import click
 from functools import partial
-from .utils import split_data
+from .utils import split_data, get_data
 
 log = logging.getLogger(__name__)
 
@@ -61,11 +61,7 @@ def load_data(datafile="../../../paper/20210624_df_cleaned.pkl"):
     return X, Y, transformer, y_transformer
 
 
-def get_data(x, y, num_outputs):
-    targets = TARGETS_clean if num_outputs == 1 else [TARGETS_clean[0]]
-    train, valid, test, ts, ts1 = split_data(x, y, targets, 0.5)
 
-    return (train, valid, test)
 
 
 def inner_train_test(x, y, output_seq_length):

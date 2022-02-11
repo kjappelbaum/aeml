@@ -37,3 +37,10 @@ def split_data(x, y, targets, fraction_train, fraction_test=0.5):
         (x_test, y_test[targets]),
         ts, ts_2
     )
+
+
+def get_data(x, y, num_outputs, targets_clean):
+    targets = targets_clean if num_outputs == 1 else [targets_clean[0]]
+    train, valid, test, ts, ts1 = split_data(x, y, targets, 0.5)
+
+    return (train, valid, test)
