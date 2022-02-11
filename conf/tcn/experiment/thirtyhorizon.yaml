@@ -1,14 +1,14 @@
 
 model:
-    input_chunk_length: 60
-    output_chunk_length: 40
-    num_layers: 16
-    num_filters: 8
-    kernel_size: 4
-    dropout: 0.5627
+    input_chunk_length: 80
+    output_chunk_length: 30
+    num_layers: 8
+    num_filters: 32
+    kernel_size: 2
+    dropout: 0.7431
     weight_norm: true
-    batch_size: 128
-    n_epochs: 200
+    batch_size: 64
+    n_epochs: 400
     lr: 0.02382
 
 features:

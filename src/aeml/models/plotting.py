@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-
+import numpy as np 
 
 def make_forecast_plot(y_connected, means, stds, target_names, target=1, outname=None):
 
@@ -15,6 +15,12 @@ def make_forecast_plot(y_connected, means, stds, target_names, target=1, outname
         y_connected_df[target_names[target]].index - y_connected_df[target_names[target]].index[0]
     )
     x_conncected = [val.total_seconds() / (60 * 60 * 24) for val in x_conncected]
+
+    minimum = np.min(y_connected_df[target_names[target]])
+    minimum-= 0.1 *minimum
+
+    maximum = np.max(y_connected_df[target_names[target]])
+    maximum+= 0.1 *maximum
 
     try:
         ax.plot(x, means[target_str], c="b", alpha=0.9, lw=0.2)
@@ -50,7 +56,7 @@ def make_forecast_plot(y_connected, means, stds, target_names, target=1, outname
     # ax.vlines(x_conncected[4056], -0.15, 1.0, color="gray")
     # # plt.xticks([])
 
-    # ax.ylim(-0.15, 0.8)
+    ax.ylim(minimum, maximum)
     ax.set_xlabel("time / days")
     ax.set_ylabel("normalized emissions")
     fig.tight_layout()
