@@ -10,6 +10,7 @@ seed: 1234
 project_name: aeml
 entity: kjappelbaum
 log_model: false
+dataframe: /Users/kevinmaikjablonka/git/kjappelbaum/aeml/scratch/20220210_smooth_window_16.pkl
 
 tags: 
 
