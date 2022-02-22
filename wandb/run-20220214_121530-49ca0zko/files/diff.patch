@@ -1,0 +1,37 @@
+diff --git a/src/aeml/models/hyperparam_sweep.py b/src/aeml/models/hyperparam_sweep.py
+index 69a78bc..5676b19 100644
+--- a/src/aeml/models/hyperparam_sweep.py
++++ b/src/aeml/models/hyperparam_sweep.py
+@@ -39,12 +39,12 @@ sweep_config = {
+         "batch_size": {"values": [32, 64, 128]},
+         "num_outputs": {"values": [0, 1]},
+         "n_epochs": {"values": [100, 200, 300, 400]},
+-        "input_chunk_length": {"values": [31, 40, 60, 80, 160]},
++        "input_chunk_length": {"values": [31, 40, 60, 80]},
+         "lr": {"min": -5, "max": -1, "distribution": "log_uniform"},
+     },
+ }
+ 
+-sweep_id = wandb.sweep(sweep_config, project="pyprocessta")
++sweep_id = wandb.sweep(sweep_config, project="aeml")
+ 
+ 
+ def load_data(datafile="../../../paper/20210624_df_cleaned.pkl"):
+@@ -66,7 +66,7 @@ def load_data(datafile="../../../paper/20210624_df_cleaned.pkl"):
+ 
+ def inner_train_test(x, y, output_seq_length):
+     run = wandb.init()
+-    train, valid, _ = get_data(x, y, run.config.num_outputs)
++    train, valid, _ = get_data(x, y, run.config.num_outputs, targets_clean=TARGETS_clean)
+ 
+     log.info("initialize model")
+     model_cov = TCNModel(
+@@ -133,7 +133,7 @@ def train_test(file, output_seq_length):
+     x, y, _, _ = load_data(file)
+ 
+     optimizer_func = partial(inner_train_test, output_seq_length=output_seq_length, x=x, y=y)
+-    wandb.agent(sweep_id, optimizer_func, project="pyprocessta")
++    wandb.agent(sweep_id, optimizer_func, project="aeml")
+ 
+ 
+ if __name__ == "__main__":

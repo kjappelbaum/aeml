@@ -1,0 +1,58 @@
+wandb_version: 1
+
+_wandb:
+  desc: null
+  value:
+    cli_version: 0.12.10
+    code_path: code/src/aeml/models/hyperparam_sweep.py
+    framework: lightgbm
+    is_jupyter_run: false
+    is_kaggle_kernel: false
+    python_version: 3.8.12
+    start_time: 1644969979
+    t:
+      1:
+      - 1
+      - 5
+      - 8
+      2:
+      - 1
+      - 5
+      - 8
+      3:
+      - 2
+      4: 3.8.12
+      5: 0.12.10
+      8:
+      - 4
+      - 5
+batch_size:
+  desc: null
+  value: 32
+dropout:
+  desc: null
+  value: 0.8913276876693278
+input_chunk_length:
+  desc: null
+  value: 80
+kernel_size:
+  desc: null
+  value: 5
+lr:
+  desc: null
+  value: 0.06703912649238106
+n_epochs:
+  desc: null
+  value: 400
+num_filters:
+  desc: null
+  value: 16
+num_layers:
+  desc: null
+  value: 4
+num_outputs:
+  desc: null
+  value: 0
+weight_norm:
+  desc: null
+  value: true

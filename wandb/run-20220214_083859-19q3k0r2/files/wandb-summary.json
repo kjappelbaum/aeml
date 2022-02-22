@@ -1,0 +1,1 @@
+{"mape_valid": 25.722354650497437, "_runtime": 1575, "_timestamp": 1644825915, "_step": 3, "mape_train": 24.939756095409393, "mae_valid": 0.08186396956443787, "mae_train": 0.0765814483165741, "_wandb": {"runtime": 1567}}
