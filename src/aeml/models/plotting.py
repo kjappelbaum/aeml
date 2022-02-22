@@ -56,7 +56,7 @@ def make_forecast_plot(y_connected, means, stds, target_names, target=1, outname
     # ax.vlines(x_conncected[4056], -0.15, 1.0, color="gray")
     # # plt.xticks([])
 
-    ax.ylim(minimum, maximum)
+    ax.set_ylim(minimum, maximum)
     ax.set_xlabel("time / days")
     ax.set_ylabel("normalized emissions")
     fig.tight_layout()
