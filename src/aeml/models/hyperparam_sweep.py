@@ -37,7 +37,7 @@ sweep_config = {
             "max": 0.9,
         },
         "batch_size": {"values": [32, 64, 128]},
-        "num_outputs": {"values": [0, 1]},
+        "num_outputs": {"values": [1]},
         "n_epochs": {"values": [100, 200, 300, 400]},
         "input_chunk_length": {"values": [31, 40, 60, 80]},
         "lr": {"min": -5, "max": -1, "distribution": "log_uniform"},
