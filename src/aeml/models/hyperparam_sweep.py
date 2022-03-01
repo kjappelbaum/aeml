@@ -10,6 +10,7 @@ import logging
 import click
 from functools import partial
 from .utils import split_data, get_data
+import torch
 
 log = logging.getLogger(__name__)
 
@@ -123,6 +124,7 @@ def inner_train_test(x, y, output_seq_length):
 
     wandb.log({"mae_valid": mae_valid})
     wandb.log({"mae_train": mae_train})
+    torch.cuda.empty_cache()
 
 
 @click.command()
