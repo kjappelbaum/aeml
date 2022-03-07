@@ -148,7 +148,7 @@ def inner_train_test(x, y, output_seq_length, target):
     backtest_train = model.historical_forecasts(
         train[1],
         past_covariates=train[0],
-        start=0.1,
+        start=0.3,
         forecast_horizon=output_seq_length,
         stride=1,
         retrain=False,
@@ -159,7 +159,7 @@ def inner_train_test(x, y, output_seq_length, target):
     backtest_valid = model.historical_forecasts(
         valid[1],
         past_covariates=valid[0],
-        start=0.1,
+        start=0.3,
         forecast_horizon=output_seq_length,
         stride=1,
         retrain=False,
