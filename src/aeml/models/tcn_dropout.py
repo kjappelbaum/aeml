@@ -4,7 +4,7 @@ from itertools import product
 from random import sample
 from typing import List, Optional, Sequence, Tuple, Union
 
-from darts.logging import get_logger, raise_if, raise_if_not
+from darts.logging import get_logger, raise_if, raise_if_not, raise_deprecation_warning
 from darts.models import TCNModel
 from darts.timeseries import TimeSeries
 from darts.utils import _build_tqdm_iterator, _with_sanity_checks
@@ -17,6 +17,7 @@ from .utils import enable_dropout
 import pandas as pd
 import torch
 import numpy as np 
+import pytorch_lightning as pl
 
 logger = get_logger(__name__)
 
@@ -28,26 +29,31 @@ class TCNDropout(TCNModel):
         series: Optional[Union[TimeSeries, Sequence[TimeSeries]]] = None,
         past_covariates: Optional[Union[TimeSeries, Sequence[TimeSeries]]] = None,
         future_covariates: Optional[Union[TimeSeries, Sequence[TimeSeries]]] = None,
+        trainer: Optional[pl.Trainer] = None,
         batch_size: Optional[int] = None,
-        verbose: bool = False,
+        verbose: Optional[bool] = None,
         n_jobs: int = 1,
         roll_size: Optional[int] = None,
         num_samples: int = 1,
         num_loader_workers: int = 0,
-        enable_mc_dropout: bool = False,
+                enable_mc_dropout: bool = False,
     ) -> Union[TimeSeries, Sequence[TimeSeries]]:
-        """Predict the `n` time step following the end of the training series, or of the specified `series`.
+        """Predict the ``n`` time step following the end of the training series, or of the specified ``series``.
+        Prediction is performed with a PyTorch Lightning Trainer. It uses a default Trainer object from presets and
+        ``pl_trainer_kwargs`` used at model creation. You can also use a custom Trainer with optional parameter
+        ``trainer``. For more information on PyTorch Lightning Trainers check out `this link
+        <https://pytorch-lightning.readthedocs.io/en/stable/common/trainer.html>`_ .
         Below, all possible parameters are documented, but not all models support all parameters. For instance,
-        all the :class:`PastCovariatesTorchModel` support only `past_covariates` and not `future_covariates`.
+        all the :class:`PastCovariatesTorchModel` support only ``past_covariates`` and not ``future_covariates``.
         Darts will complain if you try calling :func:`predict()` on a model with the wrong covariates argument.
         Darts will also complain if the provided covariates do not have a sufficient time span.
         In general, not all models require the same covariates' time spans:
-        * | Models relying on past covariates require the last `input_chunk_length` of the `past_covariates`
-          | points to be known at prediction time. For horizon values `n > output_chunk_length`, these models
-          | require at least the next `n - output_chunk_length` future values to be known as well.
-        * | Models relying on future covariates require the next `n` values to be known.
+        * | Models relying on past covariates require the last ``input_chunk_length`` of the ``past_covariates``
+          | points to be known at prediction time. For horizon values ``n > output_chunk_length``, these models
+          | require at least the next ``n - output_chunk_length`` future values to be known as well.
+        * | Models relying on future covariates require the next ``n`` values to be known.
           | In addition (for :class:`DualCovariatesTorchModel` and :class:`MixedCovariatesTorchModel`), they also
-          | require the "historic" values of these future covariates (over the past `input_chunk_length`).
+          | require the "historic" values of these future covariates (over the past ``input_chunk_length``).
         When handling covariates, Darts will try to use the time axes of the target and the covariates
         to come up with the right time slices. So the covariates can be longer than needed; as long as the time axes
         are correct Darts will handle them correctly. It will also complain if their time span is not sufficient.
@@ -65,30 +71,39 @@ class TCNDropout(TCNModel):
         future_covariates
             Optionally, the future-known covariates series needed as inputs for the model.
             They must match the covariates used for training in terms of dimension.
+        trainer
+            Optionally, a custom PyTorch-Lightning Trainer object to perform prediction. Using a custom ``trainer``
+            will override Darts' default trainer.
         batch_size
-            Size of batches during prediction. Defaults to the models' training `batch_size` value.
+            Size of batches during prediction. Defaults to the models' training ``batch_size`` value.
         verbose
             Optionally, whether to print progress.
+            .. deprecated:: v0.17.0
+                ``verbose`` has been deprecated in v0.17.0 and will be removed in a future version.
+                Instead, control verbosity with PyTorch Lightning Trainer parameters ``enable_progress_bar``,
+                ``progress_bar_refresh_rate`` and ``enable_model_summary`` in the ``pl_trainer_kwargs`` dict
+                at model creation. See for example here:
+                https://pytorch-lightning.readthedocs.io/en/stable/common/trainer.html#enable-progress-bar
         n_jobs
-            The number of jobs to run in parallel. `-1` means using all processors. Defaults to `1`.
+            The number of jobs to run in parallel. ``-1`` means using all processors. Defaults to ``1``.
         roll_size
-            For self-consuming predictions, i.e. `n > output_chunk_length`, determines how many
+            For self-consuming predictions, i.e. ``n > output_chunk_length``, determines how many
             outputs of the model are fed back into it at every iteration of feeding the predicted target
             (and optionally future covariates) back into the model. If this parameter is not provided,
-            it will be set `output_chunk_length` by default.
+            it will be set ``output_chunk_length`` by default.
         num_samples
             Number of times a prediction is sampled from a probabilistic model. Should be left set to 1
             for deterministic models.
         num_loader_workers
-            Optionally, an integer specifying the `num_workers` to use in PyTorch ``DataLoader`` instances,
+            Optionally, an integer specifying the ``num_workers`` to use in PyTorch ``DataLoader`` instances,
             for the inference/prediction dataset loaders (if any).
             A larger number of workers can sometimes increase performance, but can also incur extra overheads
             and increase memory usage, as more batches are loaded in parallel.
         Returns
         -------
         Union[TimeSeries, Sequence[TimeSeries]]
-            One or several time series containing the forecasts of `series`, or the forecast of the training series
-            if `series` is not specified and the model has been trained on a single series.
+            One or several time series containing the forecasts of ``series``, or the forecast of the training series
+            if ``series`` is not specified and the model has been trained on a single series.
         """
         super().predict(n, series, past_covariates, future_covariates)
 
@@ -110,13 +125,18 @@ class TCNDropout(TCNModel):
             series = [series]
 
         past_covariates = (
-            [past_covariates] if isinstance(past_covariates, TimeSeries) else past_covariates
+            [past_covariates]
+            if isinstance(past_covariates, TimeSeries)
+            else past_covariates
         )
         future_covariates = (
-            [future_covariates] if isinstance(future_covariates, TimeSeries) else future_covariates
+            [future_covariates]
+            if isinstance(future_covariates, TimeSeries)
+            else future_covariates
         )
 
-        if self.encoders.encoding_available:
+        # encoders are set when calling fit(), but not when calling fit_from_dataset()
+        if self.encoders is not None and self.encoders.encoding_available:
             past_covariates, future_covariates = self.encoders.encode_inference(
                 n=n,
                 target=series,
@@ -134,51 +154,41 @@ class TCNDropout(TCNModel):
         predictions = self.predict_from_dataset(
             n,
             dataset,
+            trainer=trainer,
             verbose=verbose,
             batch_size=batch_size,
             n_jobs=n_jobs,
             roll_size=roll_size,
             num_samples=num_samples,
-            enable_mc_dropout=enable_mc_dropout,
+              enable_mc_dropout=enable_mc_dropout,
         )
+
         return predictions[0] if called_with_single_series else predictions
 
-    def _predict_wrapper(
-        self,
-        n: int,
-        series: TimeSeries,
-        past_covariates: Optional[TimeSeries],
-        future_covariates: Optional[TimeSeries],
-        num_samples: int,
-        enable_mc_dropout: bool = False,
-    ) -> TimeSeries:
-        return self.predict(
-            n,
-            series,
-            past_covariates=past_covariates,
-            future_covariates=future_covariates,
-            num_samples=num_samples,
-            enable_mc_dropout=enable_mc_dropout,
-        )
-
+    @random_method
     def predict_from_dataset(
         self,
         n: int,
         input_series_dataset: InferenceDataset,
+        trainer: Optional[pl.Trainer] = None,
         batch_size: Optional[int] = None,
-        verbose: bool = False,
+        verbose: Optional[bool] = None,
         n_jobs: int = 1,
         roll_size: Optional[int] = None,
         num_samples: int = 1,
         num_loader_workers: int = 0,
-        enable_mc_dropout: bool = False,
+          enable_mc_dropout: bool = False,
     ) -> Sequence[TimeSeries]:
 
         """
         This method allows for predicting with a specific :class:`darts.utils.data.InferenceDataset` instance.
-        These datasets implement a PyTorch `Dataset`, and specify how the target and covariates are sliced
+        These datasets implement a PyTorch ``Dataset``, and specify how the target and covariates are sliced
         for inference. In most cases, you'll rather want to call :func:`predict()` instead, which will create an
         appropriate :class:`InferenceDataset` for you.
+        Prediction is performed with a PyTorch Lightning Trainer. It uses a default Trainer object from presets and
+        ``pl_trainer_kwargs`` used at model creation. You can also use a custom Trainer with optional parameter
+        ``trainer``. For more information on PyTorch Lightning Trainers check out `this link
+        <https://pytorch-lightning.readthedocs.io/en/stable/common/trainer.html>`_ .
         Parameters
         ----------
         n
@@ -187,22 +197,31 @@ class TCNDropout(TCNModel):
             Optionally, a series or sequence of series, representing the history of the target series' whose
             future is to be predicted. If specified, the method returns the forecasts of these
             series. Otherwise, the method returns the forecast of the (single) training series.
+        trainer
+            Optionally, a custom PyTorch-Lightning Trainer object to perform prediction.  Using a custom ``trainer``
+            will override Darts' default trainer.
         batch_size
-            Size of batches during prediction. Defaults to the models `batch_size` value.
+            Size of batches during prediction. Defaults to the models ``batch_size`` value.
         verbose
-            Shows the progress bar for batch predicition. Off by default.
+            Optionally, whether to print progress.
+            .. deprecated:: v0.17.0
+                ``verbose`` has been deprecated in v0.17.0 and will be removed in a future version.
+                Instead, control verbosity with PyTorch Lightning Trainer parameters ``enable_progress_bar``,
+                ``progress_bar_refresh_rate`` and ``enable_model_summary`` in the ``pl_trainer_kwargs`` dict
+                at model creation. See for example here:
+                https://pytorch-lightning.readthedocs.io/en/stable/common/trainer.html#enable-progress-bar
         n_jobs
-            The number of jobs to run in parallel. `-1` means using all processors. Defaults to `1`.
+            The number of jobs to run in parallel. ``-1`` means using all processors. Defaults to ``1``.
         roll_size
-            For self-consuming predictions, i.e. `n > output_chunk_length`, determines how many
+            For self-consuming predictions, i.e. ``n > output_chunk_length``, determines how many
             outputs of the model are fed back into it at every iteration of feeding the predicted target
             (and optionally future covariates) back into the model. If this parameter is not provided,
-            it will be set `output_chunk_length` by default.
+            it will be set ``output_chunk_length`` by default.
         num_samples
             Number of times a prediction is sampled from a probabilistic model. Should be left set to 1
             for deterministic models.
         num_loader_workers
-            Optionally, an integer specifying the `num_workers` to use in PyTorch ``DataLoader`` instances,
+            Optionally, an integer specifying the ``num_workers`` to use in PyTorch ``DataLoader`` instances,
             for the inference/prediction dataset loaders (if any).
             A larger number of workers can sometimes increase performance, but can also incur extra overheads
             and increase memory usage, as more batches are loaded in parallel.
@@ -230,6 +249,18 @@ class TCNDropout(TCNModel):
         # iterate through batches to produce predictions
         batch_size = batch_size or self.batch_size
 
+        # set prediction parameters
+        self.model.set_predict_parameters(
+            n=n,
+            num_samples=num_samples,
+            roll_size=roll_size,
+            batch_size=batch_size,
+            n_jobs=n_jobs,
+        )
+
+        if enable_mc_dropout:
+            enable_dropout(self.model)
+
         pred_loader = DataLoader(
             input_series_dataset,
             batch_size=batch_size,
@@ -239,78 +270,37 @@ class TCNDropout(TCNModel):
             drop_last=False,
             collate_fn=self._batch_collate_fn,
         )
-        predictions = []
-        iterator = _build_tqdm_iterator(pred_loader, verbose=verbose)
 
-        self.model.eval()
-        if enable_mc_dropout:
-            enable_dropout(self.model)
-        with torch.no_grad():
-            for batch_tuple in iterator:
-                batch_tuple = self._batch_to_device(batch_tuple)
-                input_data_tuple, batch_input_series = batch_tuple[:-1], batch_tuple[-1]
+        if verbose is not None:
+            raise_deprecation_warning(
+                "kwarg `verbose` is deprecated and will be removed in a future Darts version. "
+                "Instead, control verbosity with PyTorch Lightning Trainer parameters `enable_progress_bar`, "
+                "`progress_bar_refresh_rate` and `enable_model_summary` in the `pl_trainer_kwargs` dict "
+                "at model creation.",
+                logger,
+            )
+        verbose = True if verbose is None else verbose
 
-                # number of individual series to be predicted in current batch
-                num_series = input_data_tuple[0].shape[0]
+        # setup trainer. will only be re-instantiated if both `trainer` and `self.trainer` are `None`
+        trainer = trainer if trainer is not None else self.trainer
+        self._setup_trainer(trainer=trainer, verbose=verbose, epochs=self.n_epochs)
 
-                # number of of times the input tensor should be tiled to produce predictions for multiple samples
-                # this variable is larger than 1 only if the batch_size is at least twice as large as the number
-                # of individual time series being predicted in current batch (`num_series`)
-                batch_sample_size = min(max(batch_size // num_series, 1), num_samples)
+        # prediction output comes as nested list: list of predicted `TimeSeries` for each batch.
+        predictions = self.trainer.predict(self.model, pred_loader)
+        # flatten and return
+        return [ts for batch in predictions for ts in batch]
 
-                # counts number of produced prediction samples for every series to be predicted in current batch
-                sample_count = 0
+    def _predict_wrapper(
+        self,
+        n: int,
+        series: TimeSeries,
+        past_covariates: Optional[TimeSeries],
+        future_covariates: Optional[TimeSeries],
+        num_samples: int,
+        enable_mc_dropout: bool = False
+    ) -> TimeSeries:
+        return self.predict(n, num_samples=num_samples, enable_mc_dropout=enable_mc_dropout)
 
-                # repeat prediction procedure for every needed sample
-                batch_predictions = []
-                while sample_count < num_samples:
-
-                    # make sure we don't produce too many samples
-                    if sample_count + batch_sample_size > num_samples:
-                        batch_sample_size = num_samples - sample_count
-
-                    # stack multiple copies of the tensors to produce probabilistic forecasts
-                    input_data_tuple_samples = self._sample_tiling(
-                        input_data_tuple, batch_sample_size
-                    )
-
-                    # get predictions for 1 whole batch (can include predictions of multiple series
-                    # and for multiple samples if a probabilistic forecast is produced)
-                    batch_prediction = self._get_batch_prediction(
-                        n, input_data_tuple_samples, roll_size
-                    )
-
-                    # reshape from 3d tensor (num_series x batch_sample_size, ...)
-                    # into 4d tensor (batch_sample_size, num_series, ...), where dim 0 represents the samples
-                    out_shape = batch_prediction.shape
-                    batch_prediction = batch_prediction.reshape(
-                        (
-                            batch_sample_size,
-                            num_series,
-                        )
-                        + out_shape[1:]
-                    )
-
-                    # save all predictions and update the `sample_count` variable
-                    batch_predictions.append(batch_prediction)
-                    sample_count += batch_sample_size
-
-                # concatenate the batch of samples, to form num_samples samples
-                batch_predictions = torch.cat(batch_predictions, dim=0)
-                batch_predictions = batch_predictions.cpu().detach().numpy()
-
-                # create `TimeSeries` objects from prediction tensors
-                ts_forecasts = Parallel(n_jobs=n_jobs)(
-                    delayed(self._build_forecast_series)(
-                        [batch_prediction[batch_idx] for batch_prediction in batch_predictions],
-                        input_series,
-                    )
-                    for batch_idx, input_series in enumerate(batch_input_series)
-                )
-
-                predictions.extend(ts_forecasts)
-
-        return predictions
 
     @_with_sanity_checks("_historical_forecasts_sanity_checks")
     def historical_forecasts(
@@ -326,7 +316,7 @@ class TCNDropout(TCNModel):
         overlap_end: bool = False,
         last_points_only: bool = True,
         verbose: bool = False,
-        enable_mc_dropout: bool = False,
+        enable_mc_dropout: bool = False
     ) -> Union[TimeSeries, List[TimeSeries]]:
 
         """Compute the historical forecasts that would have been obtained by this model on the `series`.
@@ -406,7 +396,9 @@ class TCNDropout(TCNModel):
         start = series.get_timestamp_at_point(start)
 
         # build the prediction times in advance (to be able to use tqdm)
-        last_valid_pred_time = self._get_last_prediction_time(series, forecast_horizon, overlap_end)
+        last_valid_pred_time = self._get_last_prediction_time(
+            series, forecast_horizon, overlap_end
+        )
 
         pred_times = [start]
         while pred_times[-1] < last_valid_pred_time:
@@ -444,7 +436,7 @@ class TCNDropout(TCNModel):
                 past_covariates=past_covariates,
                 future_covariates=future_covariates,
                 num_samples=num_samples,
-                enable_mc_dropout=enable_mc_dropout,
+                enable_mc_dropout=enable_mc_dropout
             )
 
             if last_points_only:
