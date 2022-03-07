@@ -136,7 +136,7 @@ def inner_train_test(x, y, output_seq_length, target):
       num_leaves=run.config.num_leaves, 
       extra_trees=run.config.extra_trees, 
        max_depth=run.config.max_depth,
-       output_chunk_length=output_seq_length
+       output_chunk_length=output_seq_length, objective='quantile', alpha=0.5
 
     )
 

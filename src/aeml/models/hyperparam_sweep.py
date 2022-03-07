@@ -9,7 +9,7 @@ import numpy as np
 import logging
 import click
 from functools import partial
-from .utils import split_data, get_data
+from aeml.models.utils import split_data, get_data
 import torch
 
 log = logging.getLogger(__name__)
