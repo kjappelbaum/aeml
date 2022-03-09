@@ -13,7 +13,7 @@ from darts.utils.torch import random_method
 from joblib import Parallel, delayed
 from torch.utils.data import DataLoader
 
-from .utils import enable_dropout
+from aeml.models.utils import enable_dropout
 import pandas as pd
 import torch
 import numpy as np 

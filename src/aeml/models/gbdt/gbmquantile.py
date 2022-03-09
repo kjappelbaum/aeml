@@ -9,13 +9,21 @@ class LightGBMQuantileRegressor:
         self.mid_model = LightGBMModel(objective='quantile', alpha=mid_quantile, **kwargs)
         self.upper_model = LightGBMModel(objective='quantile', alpha=upper_quantile, **kwargs)
 
-    def fit(self, X_train, y_train): 
+    def fit(self, y_train, X_train): 
         for model in [self.lower_model, self.mid_model, self.upper_model]:
             model.fit(y_train, X_train)
 
-    def predict(self, X, **kwargs): 
-        lower = self.lower_model.predict(X, **kwargs)
-        mid = self.mid_model.predict(X, **kwargs)
-        upper = self.upper_model.predict(X, **kwargs)
+    def forecast(self, **kwargs): 
+        lower = self.lower_model.predict(**kwargs)
+        mid = self.mid_model.predict(**kwargs)
+        upper = self.upper_model.predict(**kwargs)
+
+        return lower, mid, upper
+
+    
+    def historical_forecasts(self, **kwargs): 
+        lower = self.lower_model.historical_forecasts( **kwargs)
+        mid = self.mid_model.historical_forecasts( **kwargs)
+        upper = self.upper_model.historical_forecasts( **kwargs)
 
         return lower, mid, upper

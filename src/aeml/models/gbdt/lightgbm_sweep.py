@@ -10,7 +10,7 @@ import numpy as np
 import logging
 import click
 from functools import partial
-from .utils import split_data
+from aeml.models.utils import split_data
 import torch
 
 log = logging.getLogger(__name__)
@@ -192,7 +192,7 @@ def train_test(file, output_seq_length, target):
     x, y, _, _ = load_data(file)
 
     optimizer_func = partial(inner_train_test, output_seq_length=output_seq_length, x=x, y=y, target=target)
-    wandb.agent(sweep_id, function=optimizer_func, project="aeml")
+    wandb.agent('26gi3tth', function=optimizer_func, project="aeml")
 
 
 if __name__ == "__main__":
