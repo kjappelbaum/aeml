@@ -16,10 +16,11 @@ from torch.utils.data import DataLoader
 from aeml.models.utils import enable_dropout
 import pandas as pd
 import torch
-import numpy as np 
+import numpy as np
 import pytorch_lightning as pl
 
 logger = get_logger(__name__)
+
 
 class TCNDropout(TCNModel):
     @random_method
@@ -36,7 +37,7 @@ class TCNDropout(TCNModel):
         roll_size: Optional[int] = None,
         num_samples: int = 1,
         num_loader_workers: int = 0,
-                enable_mc_dropout: bool = False,
+        enable_mc_dropout: bool = False,
     ) -> Union[TimeSeries, Sequence[TimeSeries]]:
         """Predict the ``n`` time step following the end of the training series, or of the specified ``series``.
         Prediction is performed with a PyTorch Lightning Trainer. It uses a default Trainer object from presets and
@@ -125,14 +126,10 @@ class TCNDropout(TCNModel):
             series = [series]
 
         past_covariates = (
-            [past_covariates]
-            if isinstance(past_covariates, TimeSeries)
-            else past_covariates
+            [past_covariates] if isinstance(past_covariates, TimeSeries) else past_covariates
         )
         future_covariates = (
-            [future_covariates]
-            if isinstance(future_covariates, TimeSeries)
-            else future_covariates
+            [future_covariates] if isinstance(future_covariates, TimeSeries) else future_covariates
         )
 
         # encoders are set when calling fit(), but not when calling fit_from_dataset()
@@ -160,7 +157,7 @@ class TCNDropout(TCNModel):
             n_jobs=n_jobs,
             roll_size=roll_size,
             num_samples=num_samples,
-              enable_mc_dropout=enable_mc_dropout,
+            enable_mc_dropout=enable_mc_dropout,
         )
 
         return predictions[0] if called_with_single_series else predictions
@@ -177,7 +174,7 @@ class TCNDropout(TCNModel):
         roll_size: Optional[int] = None,
         num_samples: int = 1,
         num_loader_workers: int = 0,
-          enable_mc_dropout: bool = False,
+        enable_mc_dropout: bool = False,
     ) -> Sequence[TimeSeries]:
 
         """
@@ -297,10 +294,9 @@ class TCNDropout(TCNModel):
         past_covariates: Optional[TimeSeries],
         future_covariates: Optional[TimeSeries],
         num_samples: int,
-        enable_mc_dropout: bool = False
+        enable_mc_dropout: bool = False,
     ) -> TimeSeries:
         return self.predict(n, num_samples=num_samples, enable_mc_dropout=enable_mc_dropout)
-
 
     @_with_sanity_checks("_historical_forecasts_sanity_checks")
     def historical_forecasts(
@@ -316,7 +312,7 @@ class TCNDropout(TCNModel):
         overlap_end: bool = False,
         last_points_only: bool = True,
         verbose: bool = False,
-        enable_mc_dropout: bool = False
+        enable_mc_dropout: bool = False,
     ) -> Union[TimeSeries, List[TimeSeries]]:
 
         """Compute the historical forecasts that would have been obtained by this model on the `series`.
@@ -396,9 +392,7 @@ class TCNDropout(TCNModel):
         start = series.get_timestamp_at_point(start)
 
         # build the prediction times in advance (to be able to use tqdm)
-        last_valid_pred_time = self._get_last_prediction_time(
-            series, forecast_horizon, overlap_end
-        )
+        last_valid_pred_time = self._get_last_prediction_time(series, forecast_horizon, overlap_end)
 
         pred_times = [start]
         while pred_times[-1] < last_valid_pred_time:
@@ -436,7 +430,7 @@ class TCNDropout(TCNModel):
                 past_covariates=past_covariates,
                 future_covariates=future_covariates,
                 num_samples=num_samples,
-                enable_mc_dropout=enable_mc_dropout
+                enable_mc_dropout=enable_mc_dropout,
             )
 
             if last_points_only:

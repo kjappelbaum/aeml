@@ -15,9 +15,7 @@ import statsmodels
 __all__ = ["detrend_stochastic", "detrend_linear_deterministc"]
 
 
-def detrend_stochastic(
-    data: Union[pd.Series, pd.DataFrame]
-) -> Union[pd.Series, pd.DataFrame]:
+def detrend_stochastic(data: Union[pd.Series, pd.DataFrame]) -> Union[pd.Series, pd.DataFrame]:
     """Detrends time series data using the difference method y_t - y_{t-1}.
     This is useful to remove stochastic trends (random walk with trend).
 

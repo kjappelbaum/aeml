@@ -82,5 +82,3 @@ def load_process_data(
     df_gas.index.name = None
 
     return df_measurements, df_gas, times
-
-

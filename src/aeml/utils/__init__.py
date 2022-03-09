@@ -19,8 +19,10 @@ def split_data(x, y, targets, fraction_train, fraction_test=0.5):
         (x_before, y_before[targets]),
         (x_valid, y_valid[targets]),
         (x_test, y_test[targets]),
-        ts, ts_2
+        ts,
+        ts_2,
     )
+
 
 def get_data(num_outputs, x, y, targets):
     targets = targets if num_outputs == 1 else [targets[0]]

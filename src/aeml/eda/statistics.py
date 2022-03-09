@@ -13,9 +13,7 @@ __all__ = [
 ]
 
 
-def check_stationarity(
-    series: pd.Series, threshold: float = 0.05, regression="c"
-) -> dict:
+def check_stationarity(series: pd.Series, threshold: float = 0.05, regression="c") -> dict:
     """Performs the Augmented-Dickey fuller and Kwiatkowski-Phillips-Schmidt-Shin (KPSS) tests
     for stationarity.
 
@@ -97,8 +95,6 @@ def computer_granger_causality_matrix(
 
     for x in xs:
         for y in ys:
-            results_matrix[x].append(
-                check_granger_causality(df[x], df[y])["min_p_value"]
-            )
+            results_matrix[x].append(check_granger_causality(df[x], df[y])["min_p_value"])
 
     return pd.DataFrame.from_dict(results_matrix, orient="index", columns=ys)

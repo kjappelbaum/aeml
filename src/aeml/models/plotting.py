@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
-import numpy as np 
+import numpy as np
+
 
 def make_forecast_plot(y_connected, means, stds, target_names, target=1, outname=None):
 
@@ -17,10 +18,10 @@ def make_forecast_plot(y_connected, means, stds, target_names, target=1, outname
     x_conncected = [val.total_seconds() / (60 * 60 * 24) for val in x_conncected]
 
     minimum = np.min(y_connected_df[target_names[target]])
-    minimum-= 0.1 *minimum
+    minimum -= 0.1 * minimum
 
     maximum = np.max(y_connected_df[target_names[target]])
-    maximum+= 0.1 *maximum
+    maximum += 0.1 * maximum
 
     try:
         ax.plot(x, means[target_str], c="b", alpha=0.9, lw=0.2)

@@ -1,6 +1,7 @@
-import pandas as pd 
-import numpy as np 
-from functools import partial 
+import pandas as pd
+import numpy as np
+from functools import partial
+
 
 def summarize_results(results):
     values = []
@@ -17,7 +18,9 @@ def summarize_results(results):
     )
 
 
-def _run_backtest(rep, model, x_test, y_test, start=0.3, stride=1, horizon=4, enable_mc_dropout=True):
+def _run_backtest(
+    rep, model, x_test, y_test, start=0.3, stride=1, horizon=4, enable_mc_dropout=True
+):
     backtest = model.historical_forecasts(
         y_test,
         past_covariates=x_test,
@@ -26,12 +29,14 @@ def _run_backtest(rep, model, x_test, y_test, start=0.3, stride=1, horizon=4, en
         stride=stride,
         retrain=False,
         verbose=False,
-        enable_mc_dropout=enable_mc_dropout
+        enable_mc_dropout=enable_mc_dropout,
     )
     return backtest
 
 
-def parallelized_inference(model, x, y, repeats=100, start=0.3, stride=1, horizon=6, enable_mc_dropout=True):
+def parallelized_inference(
+    model, x, y, repeats=100, start=0.3, stride=1, horizon=6, enable_mc_dropout=True
+):
     results = []
 
     backtest_partial = partial(
@@ -42,7 +47,7 @@ def parallelized_inference(model, x, y, repeats=100, start=0.3, stride=1, horizo
         start=start,
         stride=stride,
         horizon=horizon,
-        enable_mc_dropout=enable_mc_dropout
+        enable_mc_dropout=enable_mc_dropout,
     )
 
     for res in map(backtest_partial, range(repeats)):
@@ -50,9 +55,13 @@ def parallelized_inference(model, x, y, repeats=100, start=0.3, stride=1, horizo
 
     return results
 
-def _run_forcast(_,model, x_full, y_past, future_len, enable_mc_dropout=True): 
 
-    return model.predict(future_len, series=y_past, past_covariates=x_full, enable_mc_dropout=enable_mc_dropout)
+def _run_forcast(_, model, x_full, y_past, future_len, enable_mc_dropout=True):
+
+    return model.predict(
+        future_len, series=y_past, past_covariates=x_full, enable_mc_dropout=enable_mc_dropout
+    )
+
 
 def forecast(model, x_full, y_past, future_len, repeats=100, enable_mc_dropout=True):
     results = []
@@ -63,7 +72,7 @@ def forecast(model, x_full, y_past, future_len, repeats=100, enable_mc_dropout=T
         x_full=x_full,
         y_past=y_past,
         future_len=future_len,
-        enable_mc_dropout=enable_mc_dropout
+        enable_mc_dropout=enable_mc_dropout,
     )
 
     for res in map(backtest_partial, range(repeats)):

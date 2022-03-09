@@ -47,13 +47,9 @@ def align_two_dfs(
 
     start_time = max([df_a.index[0], df_b.index[0]])
 
-    resampled_a = resample_regular(
-        df_a, resample_step, interpolation, start_time=start_time
-    )
+    resampled_a = resample_regular(df_a, resample_step, interpolation, start_time=start_time)
 
-    resampled_b = resample_regular(
-        df_b, resample_step, interpolation, start_time=start_time
-    )
+    resampled_b = resample_regular(df_b, resample_step, interpolation, start_time=start_time)
 
     merged = pd.merge(resampled_a, resampled_b, left_index=True, right_index=True)
 

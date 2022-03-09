@@ -5,9 +5,7 @@ from typing import Union
 import pandas as pd
 
 
-def drop_duplicated_indices(
-    df: Union[pd.Series, pd.DataFrame]
-) -> Union[pd.Series, pd.DataFrame]:
+def drop_duplicated_indices(df: Union[pd.Series, pd.DataFrame]) -> Union[pd.Series, pd.DataFrame]:
     """If one concatenates dataframes there might be duplicated
     indices. This can lead to problems, e.g., in interpolation steps.
     One easy solution can be to just drop the duplicated row
@@ -19,5 +17,3 @@ def drop_duplicated_indices(
         Union[pd.Series, pd.DataFrame]: Data without duplicated indices
     """
     return df[~df.index.duplicated()]
-
-

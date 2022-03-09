@@ -1,7 +1,8 @@
-import pandas as pd 
+import pandas as pd
 from ..eda.statistics import check_granger_causality
 
-__all__ = ("run_causal_impact_analysis")
+__all__ = "run_causal_impact_analysis"
+
 
 def get_timestep_tuples(df, times, i):
     times = sorted(times, key=lambda d: d["start"])
@@ -52,19 +53,12 @@ def get_causalimpact_splits(x, y, day, times, df):
     )
 
 
-
-
-
-
-
 def _select_unrelated_x(df, x_columns, intervention_column, p_value_threshold, lag=10):
     unrelated_x = []
 
     for x_column in x_columns:
         if x_column != intervention_column:
-            granger_result = check_granger_causality(
-                df[x_column], df[intervention_column], lag
-            )
+            granger_result = check_granger_causality(df[x_column], df[intervention_column], lag)
             if granger_result["min_p_value"] > p_value_threshold:
                 unrelated_x.append(x_column)
 

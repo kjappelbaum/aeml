@@ -27,4 +27,3 @@ def preprocessing_pipeline(df, z_score_threshold: float = 2, window_size: int = 
     )
 
     return df_downsampled
-

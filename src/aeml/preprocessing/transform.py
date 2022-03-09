@@ -1,5 +1,6 @@
 from darts.dataprocessing.transformers import Scaler
-from typing import List 
+from typing import List
+
 
 def transform_data(train_tuple: tuple, test_tuples: List[tuple]):
     """Scale data using minmax scaling

@@ -14,6 +14,7 @@ def choose_index(series, fraction: float):
 
     return timestamps[fraction_index]
 
+
 def choose_index(series, fraction):
     timestamps = series.time_index
     fraction_index = int(len(timestamps) * fraction)
@@ -35,7 +36,8 @@ def split_data(x, y, targets, fraction_train, fraction_test=0.5):
         (x_before, y_before[targets]),
         (x_valid, y_valid[targets]),
         (x_test, y_test[targets]),
-        ts, ts_2
+        ts,
+        ts_2,
     )
 
 
