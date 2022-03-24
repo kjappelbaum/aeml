@@ -15,12 +15,6 @@
     <a href="https://github.com/cthoyt/cookiecutter-python-package">
         <img alt="Cookiecutter template from @cthoyt" src="https://img.shields.io/badge/Cookiecutter-python--package-yellow" />
     </a>
-    <a href="https://pypi.org/project/aeml">
-        <img alt="PyPI" src="https://img.shields.io/pypi/v/aeml" />
-    </a>
-    <a href="https://pypi.org/project/aeml">
-        <img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/aeml" />
-    </a>
     <a href="https://github.com/kjappelbaum/aeml/blob/main/LICENSE">
         <img alt="PyPI - License" src="https://img.shields.io/pypi/l/aeml" />
     </a>
