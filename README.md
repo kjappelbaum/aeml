@@ -36,31 +36,9 @@ Predict amine emissions of industrial processes using machine learning
 
 ## 💪 Getting Started
 
-> TODO show in a very small amount of space the **MOST** useful thing your package can do.
-Make it as short as possible! You have an entire set of docs for later.
-
-### Command Line Interface
-
-The aeml command line tool is automatically installed. It can
-be used from the shell with the `--help` flag to show all subcommands:
-
-```shell
-$ aeml --help
-```
-
-> TODO show the most useful thing the CLI does! The CLI will have documentation auto-generated
-by `sphinx`.
+Check out some notebooks in the `/paper` directory.
 
 ## 🚀 Installation
-
-<!-- Uncomment this section after your first ``tox -e finish``
-The most recent release can be installed from
-[PyPI](https://pypi.org/project/aeml/) with:
-
-```bash
-$ pip install aeml
-```
--->
 
 The most recent code and data can be installed directly from GitHub with:
 
@@ -117,44 +95,3 @@ This project has been supported by the following grants:
 This package was created with [@audreyfeldroy](https://github.com/audreyfeldroy)'s
 [cookiecutter](https://github.com/cookiecutter/cookiecutter) package using [@cthoyt](https://github.com/cthoyt)'s
 [cookiecutter-snekpack](https://github.com/cthoyt/cookiecutter-snekpack) template.
-
-## 🛠️ For Developers
-
-<details>
-  <summary>See developer instrutions</summary>
-
-
-The final section of the README is for if you want to get involved by making a code contribution.
-
-### ❓ Testing
-
-After cloning the repository and installing `tox` with `pip install tox`, the unit tests in the `tests/` folder can be
-run reproducibly with:
-
-```shell
-$ tox
-```
-
-Additionally, these tests are automatically re-run with each commit in a [GitHub Action](https://github.com/kjappelbaum/aeml/actions?query=workflow%3ATests).
-
-### 📦 Making a Release
-
-After installing the package in development mode and installing
-`tox` with `pip install tox`, the commands for making a new release are contained within the `finish` environment
-in `tox.ini`. Run the following from the shell:
-
-```shell
-$ tox -e finish
-```
-
-This script does the following:
-
-1. Uses BumpVersion to switch the version number in the `setup.cfg` and
-   `src/aeml/version.py` to not have the `-dev` suffix
-2. Packages the code in both a tar archive and a wheel
-3. Uploads to PyPI using `twine`. Be sure to have a `.pypirc` file configured to avoid the need for manual input at this
-   step
-4. Push to GitHub. You'll need to make a release going with the commit where the version was bumped.
-5. Bump the version to the next patch. If you made big changes and want to bump the version by minor, you can
-   use `tox -e bumpversion minor` after.
-</details>
