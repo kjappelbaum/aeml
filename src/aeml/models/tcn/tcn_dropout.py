@@ -1,10 +1,15 @@
+# -*- coding: utf-8 -*-
 from abc import ABC, ABCMeta, abstractmethod
 from functools import partial
 from itertools import product
 from random import sample
 from typing import List, Optional, Sequence, Tuple, Union
 
-from darts.logging import get_logger, raise_if, raise_if_not, raise_deprecation_warning
+import numpy as np
+import pandas as pd
+import pytorch_lightning as pl
+import torch
+from darts.logging import get_logger, raise_deprecation_warning, raise_if, raise_if_not
 from darts.models import TCNModel
 from darts.timeseries import TimeSeries
 from darts.utils import _build_tqdm_iterator, _with_sanity_checks
@@ -14,10 +19,6 @@ from joblib import Parallel, delayed
 from torch.utils.data import DataLoader
 
 from aeml.models.utils import enable_dropout
-import pandas as pd
-import torch
-import numpy as np
-import pytorch_lightning as pl
 
 logger = get_logger(__name__)
 

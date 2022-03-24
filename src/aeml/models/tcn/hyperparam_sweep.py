@@ -1,16 +1,19 @@
-import wandb
-from darts.models import TCNModel
+# -*- coding: utf-8 -*-
+import logging
+from copy import deepcopy
+from functools import partial
+
+import click
+import numpy as np
 import pandas as pd
-from darts.metrics import mape, mae
+import torch
+import wandb
 from darts import TimeSeries
 from darts.dataprocessing.transformers import Scaler
-from copy import deepcopy
-import numpy as np
-import logging
-import click
-from functools import partial
-from aeml.models.utils import split_data, get_data
-import torch
+from darts.metrics import mae, mape
+from darts.models import TCNModel
+
+from aeml.models.utils import get_data, split_data
 
 log = logging.getLogger(__name__)
 

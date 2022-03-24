@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import pandera as pa
 
 schema = pa.DataFrameSchema(

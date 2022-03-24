@@ -1,5 +1,7 @@
+# -*- coding: utf-8 -*-
 from darts.models.forecasting.gradient_boosted_model import LightGBMModel
 from loguru import logger
+
 
 class LightGBMQuantileRegressor:
     """Helper class to do quantile regression with LightGBM models.
@@ -13,8 +15,12 @@ class LightGBMQuantileRegressor:
         self.upper_model = LightGBMModel(objective="quantile", alpha=upper_quantile, **kwargs)
 
     def fit(self, y_train, X_train):
-        for name, model in [('lower percentile', self.lower_model), ('middle percentile', self.mid_model), ('upper percentile', self.upper_model)]:
-            logger.info(f'fitting model {name}')
+        for name, model in [
+            ("lower percentile", self.lower_model),
+            ("middle percentile", self.mid_model),
+            ("upper percentile", self.upper_model),
+        ]:
+            logger.info(f"fitting model {name}")
             model.fit(y_train, X_train)
 
     def forecast(self, **kwargs):

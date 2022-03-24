@@ -1,4 +1,6 @@
+# -*- coding: utf-8 -*-
 import pandas as pd
+
 from ..eda.statistics import check_granger_causality
 
 __all__ = "run_causal_impact_analysis"

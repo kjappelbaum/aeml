@@ -12,6 +12,6 @@ entity: kjappelbaum
 log_model: false
 dataframe: /home/kjablonk/documents/aeml/scratch/20220210_smooth_window_16.pkl
 
-tags: 
+tags:
 
 outdir: outputs

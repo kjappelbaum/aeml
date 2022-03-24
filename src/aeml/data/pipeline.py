@@ -1,7 +1,10 @@
-from ..preprocessing.smooth import z_score_filter, exponential_window_smoothing
+# -*- coding: utf-8 -*-
 import datetime as dt
-import pandas as pd
+
 import numpy as np
+import pandas as pd
+
+from ..preprocessing.smooth import exponential_window_smoothing, z_score_filter
 
 
 def preprocessing_pipeline(df, z_score_threshold: float = 2, window_size: int = 10):

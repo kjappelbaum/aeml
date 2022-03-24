@@ -1,17 +1,20 @@
-from darts.models.forecasting.gradient_boosted_model import LightGBMModel
-import wandb
-from darts.models import TCNModel
+# -*- coding: utf-8 -*-
+from copy import deepcopy
+from functools import partial
+
+import click
+import numpy as np
 import pandas as pd
-from darts.metrics import mape, mae
+import torch
+import wandb
 from darts import TimeSeries
 from darts.dataprocessing.transformers import Scaler
-from copy import deepcopy
-import numpy as np
-import click
-from functools import partial
-from aeml.models.utils import split_data
-import torch
+from darts.metrics import mae, mape
+from darts.models import TCNModel
+from darts.models.forecasting.gradient_boosted_model import LightGBMModel
 from loguru import logger
+
+from aeml.models.utils import split_data
 
 MEAS_COLUMNS = [
     "TI-19",

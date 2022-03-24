@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 def choose_index(series, fraction):
     timestamps = series.time_index
     fraction_index = int(len(timestamps) * fraction)

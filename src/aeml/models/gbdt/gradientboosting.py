@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 """
 Gradient Boosting
 -------------
@@ -6,10 +7,9 @@ some covariate series' lags in order to obtain a forecast.
 """
 from typing import List, Optional, Tuple, Union
 
-from sklearn.ensemble import GradientBoostingRegressor
-
 from darts.logging import get_logger
 from darts.models.forecasting.regression_model import RegressionModel
+from sklearn.ensemble import GradientBoostingRegressor
 
 logger = get_logger(__name__)
 

@@ -1,5 +1,7 @@
-from darts.dataprocessing.transformers import Scaler
+# -*- coding: utf-8 -*-
 from typing import List
+
+from darts.dataprocessing.transformers import Scaler
 
 
 def transform_data(train_tuple: tuple, test_tuples: List[tuple]):

@@ -118,4 +118,3 @@ Causal impact analysis
 --------------------------
 
 Causal impact analysis allows to estimate the effect of some intervention in the absence of a control experiment. For doing so, one builds a model of what the behavior of the system would be without the intervention. The approach used in the `original causal impact paper <https://projecteuclid.org/journals/annals-of-applied-statistics/volume-9/issue-1/Inferring-causal-impact-using-Bayesian-structural-time-series-models/10.1214/14-AOAS788.full>`_ uses Bayesian structured time series models which, simply speaking, model time series via two key equation: a state equation that connects a latent, unobserved, state to the observations and once equation that describes the transition between states. The model is then defined by a model for the state and transitions between the states (e.g., local level and seasonality).
-

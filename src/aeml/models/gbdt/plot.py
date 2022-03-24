@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import matplotlib.pyplot as plt
 
 
@@ -16,7 +17,10 @@ def make_forecast_plot(
     try:
         x_axis = means_m[target_str].index - y_connected_df[targets[target]].index[0]
     except KeyError:
-        x_axis = means_m[targets[target]].index - y_connected_df[targets[target]].index[0]
+        try:
+            x_axis = means_m[targets[target]].index - y_connected_df[targets[target]].index[0]
+        except Exception:
+            x_axis = means_m["0"].index - y_connected_df[targets[target]].index[0]
     x = [val.total_seconds() / (60 * 60 * 24) for val in x_axis]
     x_conncected = y_connected_df[targets[target]].index - y_connected_df[targets[target]].index[0]
     x_conncected = [val.total_seconds() / (60 * 60 * 24) for val in x_conncected]
@@ -35,16 +39,26 @@ def make_forecast_plot(
         )
         plt.plot(x, means_m[target_str], c="b", lw=0.2)
     except KeyError:
-
-        plt.fill_between(
-            x,
-            means_l[targets[target]],
-            means_u[targets[target]],
-            alpha=0.2,
-            color="b",
-            label="forecast",
-        )
-        plt.plot(x, means_m[targets[target]], c="b", lw=0.2)
+        try:
+            plt.fill_between(
+                x,
+                means_l[targets[target]],
+                means_u[targets[target]],
+                alpha=0.2,
+                color="b",
+                label="forecast",
+            )
+            plt.plot(x, means_m[targets[target]], c="b", lw=0.2)
+        except KeyError:
+            plt.fill_between(
+                x,
+                means_l["0"],
+                means_u["0"],
+                alpha=0.2,
+                color="b",
+                label="forecast",
+            )
+            plt.plot(x, means_m["0"], c="b", lw=0.2)
 
     plt.plot(
         x_conncected,
