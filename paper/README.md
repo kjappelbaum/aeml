@@ -4,6 +4,7 @@
 - `20220310_plot_causalimpact.ipynb` used to plots the results of the causal impact analysis (e.g. generated via `xgboost_causalimpact.py`)
 - `20220310_plot_forecast_overview.ipynb` used to plot an overview of the historical forecasts 
 - `20220310_train_gbdt_on_all.ipynb` used to train the GBDT model on all data (subsequently used to compute the scenarios)
+- `20220306_predict_w_gbdt.ipynb` example for training a GBDT model 
 
 ## Scripts 
 ### Causaul impact analysis 
