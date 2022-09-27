@@ -22,3 +22,7 @@
 
 Model checkpoints are archived on Zenodo (DOI: [https://dx.doi.org/10.5281/zenodo.5153417](10.5281/zenodo.5153417)) but also available in the `model` subdirectory. 
 Unfortunately, we could only serialize the models as pickle files wherefore the same Python version and package versions are needed for reusing the models.
+
+### Results 
+
+The `results` subdirectory contains pre-computed results that are used in the notebooks that plot the results.
