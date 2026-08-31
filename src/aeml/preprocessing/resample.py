@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 """Often, data is not sampled on a regular grid.
 This module provides to regularize such data"""
+
 from typing import Union
 
 import pandas as pd

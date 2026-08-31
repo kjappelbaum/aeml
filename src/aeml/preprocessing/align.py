@@ -2,6 +2,7 @@
 """Sometimes, different kinds of measurements are sampled at different intervals. This module provides utilities to combine such data.
 We will always operate on pandas dataframes with datatime indexing
 """
+
 from typing import Union
 
 import pandas as pd
