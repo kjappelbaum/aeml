@@ -1,23 +1,22 @@
-from statistics import quantiles
 import sys
 import traceback
+from statistics import quantiles
 
 sys.path.append("../src")
-from aeml.causalimpact.utils import get_timestep_tuples
 import pickle
-from aeml.causalimpact.utils import _select_unrelated_x
+import time
+from copy import deepcopy
+
+import pandas as pd
+from darts import TimeSeries
+from darts.dataprocessing.transformers import Scaler
+
+from aeml.causalimpact.utils import _select_unrelated_x, get_timestep_tuples
 from aeml.models.forecast import (
     forecast,
     parallelized_inference,
 )
-
 from aeml.models.tcn_dropout import TCNDropout
-
-from darts.dataprocessing.transformers import Scaler
-from darts import TimeSeries
-import pandas as pd
-from copy import deepcopy
-import time
 
 TIMESTR = time.strftime("%Y%m%d-%H%M%S")
 

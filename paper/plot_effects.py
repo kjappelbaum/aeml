@@ -1,13 +1,14 @@
-import matplotlib.pyplot as plt
-from glob import glob
+import os
 import pickle
+import traceback
+from glob import glob
 from pathlib import Path
-import numpy as np
+
 import click
 import matplotlib as mpl
+import matplotlib.pyplot as plt
+import numpy as np
 from scipy.ndimage import gaussian_filter
-import os
-import traceback
 
 
 def load_pickle(filename):

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from os import fchdir
 import subprocess
 import time
+from os import fchdir
 
 import click
 
@@ -46,7 +46,7 @@ SLURM_SUBMISSION_TEMPLATE = """#!/bin/bash -l
 #SBATCH --constraint=gpu
 #SBATCH --account=pr128
 
-module load daint-gpu 
+module load daint-gpu
 source /home/kjablonk/anaconda3/bin/activate
 conda activate aeml
 
