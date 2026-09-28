@@ -24,7 +24,7 @@ def get_stepchange_times(excel_path):
 
 
 def load_process_data(
-    filepath: Union[str, bytes, os.PathLike]
+    filepath: Union[str, bytes, os.PathLike],
 ) -> Tuple[pd.DataFrame, pd.DataFrame]:
     df_measurements = pd.read_excel(
         filepath,

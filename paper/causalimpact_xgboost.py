@@ -1,27 +1,31 @@
-from aeml.causalimpact.utils import get_timestep_tuples, get_causalimpact_splits
+import math
 import pickle
-from aeml.causalimpact.utils import _select_unrelated_x
+import time
+from copy import deepcopy
+
+import click
+import numpy as np
+import pandas as pd
+from darts import TimeSeries
+from darts.dataprocessing.transformers import Scaler
+
+from aeml.causalimpact.utils import (
+    _select_unrelated_x,
+    get_causalimpact_splits,
+    get_timestep_tuples,
+)
 from aeml.models.gbdt.gbmquantile import LightGBMQuantileRegressor
 from aeml.models.gbdt.run import run_ci_model
 from aeml.models.gbdt.settings import *
 
-from darts.dataprocessing.transformers import Scaler
-from darts import TimeSeries
-import pandas as pd
-from copy import deepcopy
-import time
-import numpy as np 
-import click
-import math 
-
 settings = {
-    0: {0: ci_0_0, 1: ci_0_1}, 
-1: {0: ci_1_0, 1: ci_1_1},
-2: {0: ci_2_0, 1: ci_2_1},
-3: {0: ci_3_0, 1: ci_3_1},
-4: {0: ci_4_0, 1: ci_4_1},
-5: {0: ci_5_0, 1: ci_5_1},
-6: {0: ci_6_0, 1: ci_6_1}
+    0: {0: ci_0_0, 1: ci_0_1},
+    1: {0: ci_1_0, 1: ci_1_1},
+    2: {0: ci_2_0, 1: ci_2_1},
+    3: {0: ci_3_0, 1: ci_3_1},
+    4: {0: ci_4_0, 1: ci_4_1},
+    5: {0: ci_5_0, 1: ci_5_1},
+    6: {0: ci_6_0, 1: ci_6_1},
 }
 
 TIMESTR = time.strftime("%Y%m%d-%H%M%S")
@@ -87,16 +91,17 @@ to_exclude = {
     6: [],
 }
 
+
 def select_columns(day):
     feat_to_exclude = to_exclude[day]
     feats = [f for f in MEAS_COLUMNS if f not in feat_to_exclude]
     return feats
 
 
-@click.command('cli')
-@click.argument('day', type=click.INT)
-@click.argument('target', type=click.INT)
-def run_causalimpact_analysis(day, target): 
+@click.command("cli")
+@click.argument("day", type=click.INT)
+@click.argument("target", type=click.INT)
+def run_causalimpact_analysis(day, target):
     cols = select_columns(day)
     y = TimeSeries.from_dataframe(DF)[TARGETS_clean[target]]
     x = TimeSeries.from_dataframe(DF[cols])
@@ -104,11 +109,9 @@ def run_causalimpact_analysis(day, target):
     x_trains = []
     y_trains = []
 
-    before, during, after, way_after = get_causalimpact_splits(
-        x, y, day, times, DF
-    )
+    before, during, after, way_after = get_causalimpact_splits(x, y, day, times, DF)
 
-    # We do multiseries training 
+    # We do multiseries training
     x_trains.append(before[0])
     y_trains.append(before[1])
     x_trains.append(way_after[0])
@@ -126,7 +129,7 @@ def run_causalimpact_analysis(day, target):
     x_trains[shorter] = xscaler.transform(x_trains[shorter])
     y_trains[shorter] = yscaler.transform(y_trains[shorter])
 
-    if len(x_trains[shorter]) < 300: 
+    if len(x_trains[shorter]) < 300:
         x_trains.pop(shorter)
         y_trains.pop(shorter)
 
@@ -160,39 +163,39 @@ def run_causalimpact_analysis(day, target):
 
     day_y_df = pd.concat([before_y_df, during_y_df, after_y_df], axis=0)
     day_y_ts = TimeSeries.from_dataframe(day_y_df)
-    
-    steps = math.ceil(len(during[0])/2)# * 2
+
+    steps = math.ceil(len(during[0]) / 2)  # * 2
 
     model = run_ci_model(
         x_trains,
         y_trains,
         **settings[day][target],
         num_features=len(cols),
-                quantiles=(0.05, 0.5, 0.95), 
-                output_chunk_length=steps
+        quantiles=(0.05, 0.5, 0.95),
+        output_chunk_length=steps,
     )
-    buffer = math.ceil(len(during[0])/3)
+    buffer = math.ceil(len(during[0]) / 3)
     b = before[1][:-buffer]
-    predictions = model.forecast( 
-                      n = len(during[0]) + 2* buffer,
-        series =  b,
-        past_covariates = day_x_ts,
-                
-)
+    predictions = model.forecast(
+        n=len(during[0]) + 2 * buffer,
+        series=b,
+        past_covariates=day_x_ts,
+    )
 
     results = {
-        'predictions': predictions, 
-        'x_all': day_x_ts, 
-        'before': before, 
-        'during': during, 
-        'after': after
+        "predictions": predictions,
+        "x_all": day_x_ts,
+        "before": before,
+        "during": during,
+        "after": after,
     }
 
     with open(
-            f"{TIMESTR}-causalimpact_{day}_{target}",
-            "wb",
-        ) as handle:
-            pickle.dump(results, handle)
+        f"{TIMESTR}-causalimpact_{day}_{target}",
+        "wb",
+    ) as handle:
+        pickle.dump(results, handle)
 
-if __name__ == '__main__': 
+
+if __name__ == "__main__":
     run_causalimpact_analysis()
