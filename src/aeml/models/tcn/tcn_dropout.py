@@ -177,7 +177,6 @@ class TCNDropout(TCNModel):
         num_loader_workers: int = 0,
         enable_mc_dropout: bool = False,
     ) -> Sequence[TimeSeries]:
-
         """
         This method allows for predicting with a specific :class:`darts.utils.data.InferenceDataset` instance.
         These datasets implement a PyTorch ``Dataset``, and specify how the target and covariates are sliced
@@ -315,7 +314,6 @@ class TCNDropout(TCNModel):
         verbose: bool = False,
         enable_mc_dropout: bool = False,
     ) -> Union[TimeSeries, List[TimeSeries]]:
-
         """Compute the historical forecasts that would have been obtained by this model on the `series`.
         This method uses an expanding training window;
         it repeatedly builds a training set from the beginning of `series`. It trains the
