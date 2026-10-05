@@ -9,11 +9,10 @@ import click
 import joblib
 import numpy as np
 import pandas as pd
-from darts import TimeSeries
 import torch
+from darts import TimeSeries
 
-
-from aeml.models.forecast import parallelized_inference, forecast, summarize_results
+from aeml.models.forecast import forecast, parallelized_inference, summarize_results
 from aeml.utils import choose_index
 
 THIS_DIR = os.path.dirname(os.path.realpath(__file__))

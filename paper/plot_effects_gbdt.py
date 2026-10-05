@@ -1,22 +1,25 @@
-import matplotlib.pyplot as plt
-from glob import glob
+import os
 import pickle
+import traceback
+from glob import glob
 from pathlib import Path
-import numpy as np
+
 import click
 import matplotlib as mpl
+import matplotlib.pyplot as plt
+import numpy as np
+from loguru import logger
 from scipy.ndimage import gaussian_filter
-import os
-import traceback
-from loguru import logger 
 
 plt.style.reload_library()
-plt.style.use('science')
+plt.style.use("science")
 from matplotlib import rcParams
-rcParams['font.family'] = 'sans-serif'
+
+rcParams["font.family"] = "sans-serif"
 from scipy.constants import golden
 
 TARGETS_clean = ["2-Amino-2-methylpropanol C4H11NO", "Piperazine C4H10N2"]
+
 
 def load_pickle(filename):
     with open(filename, "rb") as handle:
@@ -37,6 +40,7 @@ def get_grids(d):
 
     return outer_keys, inner_keys
 
+
 def make_image(res, objective="1"):
     outer, inner = get_grids(res)
 
@@ -47,20 +51,16 @@ def make_image(res, objective="1"):
     for i, point_x in enumerate(outer):
         for j, point_y in enumerate(inner):
             image_m[i][j] = np.sum(
-                res[point_x][point_y][1][objective].values()
-                - res[0][0][1][objective].values()
+                res[point_x][point_y][1][objective].values() - res[0][0][1][objective].values()
             )
 
             image_l[i][j] = np.sum(
-                res[point_x][point_y][0][objective].values()
-                - res[0][0][1][objective].values()
+                res[point_x][point_y][0][objective].values() - res[0][0][1][objective].values()
             )
 
             image_t[i][j] = np.sum(
-                res[point_x][point_y][2][objective].values()
-                - res[0][0][1][objective].values()
+                res[point_x][point_y][2][objective].values() - res[0][0][1][objective].values()
             )
-
 
     return image_m, outer, inner
 
@@ -79,7 +79,9 @@ def get_conditions_from_name(name):
         .replace("_amine", "")
         .replace("_amp", "")
         .replace("_pz", "")
-        .replace("_nh3", "").replace("_True", "").replace('_False', "")
+        .replace("_nh3", "")
+        .replace("_True", "")
+        .replace("_False", "")
     )
     parts = stem.split("_")
     _ = parts.pop(0)
@@ -121,9 +123,9 @@ def get_color_norm(numbers):
 def cm2inch(*tupl):
     inch = 2.54
     if isinstance(tupl[0], tuple):
-        return tuple(i/inch for i in tupl[0])
+        return tuple(i / inch for i in tupl[0])
     else:
-        return tuple(i/inch for i in tupl)
+        return tuple(i / inch for i in tupl)
 
 
 def plot_amp_pz_image(
@@ -134,12 +136,11 @@ def plot_amp_pz_image(
     one_color_scale: bool = False,
     single_output: bool = False,
     forecast: bool = False,
-    targets = TARGETS_clean
+    targets=TARGETS_clean,
 ):
 
     pip_image, pip_inner, pip_outer = None, None, None
     amp_image, pip_inner, pip_outer = None, None, None
-
 
     for file in all_files:
         if condition in file:
@@ -150,14 +151,22 @@ def plot_amp_pz_image(
             if single_output:
                 if "amp" in file:
                     print(f"amp file {file}")
-                    amp_image, amp_inner, amp_outer = make_image(load_pickle(file), objective=amp_name)
+                    amp_image, amp_inner, amp_outer = make_image(
+                        load_pickle(file), objective=amp_name
+                    )
                 if "pz" in file:
                     print(f"pz file {file}")
-                    pip_image, pip_inner, pip_outer = make_image(load_pickle(file), objective=pz_name)
+                    pip_image, pip_inner, pip_outer = make_image(
+                        load_pickle(file), objective=pz_name
+                    )
             else:
                 if "amp" in file:
-                    amp_image, amp_inner, amp_outer = make_image(load_pickle(file), objective=amp_name)
-                    pip_image, pip_inner, pip_outer = make_image(load_pickle(file), objective=pz_name)
+                    amp_image, amp_inner, amp_outer = make_image(
+                        load_pickle(file), objective=amp_name
+                    )
+                    pip_image, pip_inner, pip_outer = make_image(
+                        load_pickle(file), objective=pz_name
+                    )
 
                 continue
 
@@ -170,7 +179,7 @@ def plot_amp_pz_image(
     # except AssertionError:
     #     print(condition)
 
-    fig, ax = plt.subplots(1, 2, sharex="all", sharey="all", figsize=cm2inch(10, 10/golden))
+    fig, ax = plt.subplots(1, 2, sharex="all", sharey="all", figsize=cm2inch(10, 10 / golden))
 
     print(pip_image.shape)
     if blur is not None:
@@ -246,7 +255,9 @@ def plot_amp_pz_image(
 
     if outdir is not None:
         fig.savefig(
-            os.path.join(outdir, f"{raw_conditions}_{str(one_color_scale)}_{str(blur)}_{str(forecast)}.pdf"),
+            os.path.join(
+                outdir, f"{raw_conditions}_{str(one_color_scale)}_{str(blur)}_{str(forecast)}.pdf"
+            ),
             bbox_inches="tight",
         )
         plt.close(fig)
@@ -257,24 +268,31 @@ def plot_amp_pz_image(
 @click.command("cli")
 @click.argument("indir", type=click.Path(exists=True))
 @click.argument("outdir", type=click.Path(exists=False))
-@click.option('--forecast', is_flag=True)
+@click.option("--forecast", is_flag=True)
 def compute_single_output_maps(indir, outdir, forecast):
     if not os.path.exists(outdir):
         os.makedirs(outdir)
 
     if forecast:
         all_files = glob(os.path.join(indir, "*_True"))
-        targets = ['2-Amino-2-methylpropanol C4H11NO', 'Piperazine C4H10N2'] 
-    else: 
+        targets = ["2-Amino-2-methylpropanol C4H11NO", "Piperazine C4H10N2"]
+    else:
         all_files = glob(os.path.join(indir, "*_False"))
-        targets = ['0', '0'] 
+        targets = ["0", "0"]
 
-    logger.info(f'Found {len(all_files)} files')
+    logger.info(f"Found {len(all_files)} files")
     all_conditions = get_all_conditions(all_files)
 
     for condition in all_conditions:
         try:
-            plot_amp_pz_image(condition, all_files, outdir=outdir, single_output=True, forecast=forecast, targets=targets)
+            plot_amp_pz_image(
+                condition,
+                all_files,
+                outdir=outdir,
+                single_output=True,
+                forecast=forecast,
+                targets=targets,
+            )
         except Exception as e:
             print(traceback.format_exc())
             print(e)
