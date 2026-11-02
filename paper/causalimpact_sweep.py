@@ -1,4 +1,3 @@
-
 import logging
 import pickle
 from functools import partial
@@ -92,7 +91,7 @@ def inner_train_test(x, y, day, target):
     x = x[features]
 
     x_trains = []
-    y_trains = []   
+    y_trains = []
 
     before, during, after, way_after = get_causalimpact_splits(x, y, day, times, DF)
 
@@ -115,9 +114,9 @@ def inner_train_test(x, y, day, target):
     x_trains[shorter] = xscaler.transform(x_trains[shorter])
     y_trains[shorter] = yscaler.transform(y_trains[shorter])
 
-    steps =len(during[0]) 
+    steps = len(during[0])
 
-    if steps >  len(x_trains[shorter]):
+    if steps > len(x_trains[shorter]):
         ts = choose_index(x, 0.3)
         x_before, x_after = x_trains[longer].split_before(ts)
         y_before, y_after = y_trains[longer].split_before(ts)

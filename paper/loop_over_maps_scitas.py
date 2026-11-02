@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from os import fchdir
 import subprocess
 import time
+from os import fchdir
 
 import click
 

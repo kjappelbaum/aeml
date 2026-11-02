@@ -1,19 +1,19 @@
-from aeml.models.run import run_model
-from aeml.models.forecast import forecast, parallelized_inference, summarize_results
-from aeml.models.utils import split_data
-from aeml.models.plotting import make_forecast_plot
-from aeml.utils.io import dump_pickle
+import os
+import time
+import traceback
 
+import hydra
+import matplotlib.pyplot as plt
+import pandas as pd
 from darts import TimeSeries
 from darts.dataprocessing.transformers import Scaler
-import pandas as pd
-
-import matplotlib.pyplot as plt
-import hydra
-import time
-import os
 from matplotlib import rcParams
-import traceback
+
+from aeml.models.forecast import forecast, parallelized_inference, summarize_results
+from aeml.models.plotting import make_forecast_plot
+from aeml.models.run import run_model
+from aeml.models.utils import split_data
+from aeml.utils.io import dump_pickle
 
 plt.style.use("science")
 rcParams["font.family"] = "sans-serif"
@@ -35,7 +35,6 @@ TARGETS_clean = [
 ]
 
 from aeml.models.run import run_model
-
 
 STEP_INDICES = [75, 645, 2075, 2880, 3520, 4245]
 
