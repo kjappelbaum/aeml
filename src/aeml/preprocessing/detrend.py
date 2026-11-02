@@ -36,7 +36,7 @@ def _detrend_series(series):
 
 
 def detrend_linear_deterministc(
-    data: Union[pd.Series, pd.DataFrame]
+    data: Union[pd.Series, pd.DataFrame],
 ) -> Union[pd.Series, pd.DataFrame]:
     """Removes a deterministic linear trend from a series.
     Note that we assume that the data is sampled on a regular grid and
