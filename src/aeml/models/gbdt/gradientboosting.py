@@ -5,6 +5,7 @@ Gradient Boosting
 A forecasting model using gradient boosting regression. It uses some of the target series' lags, as well as optionally
 some covariate series' lags in order to obtain a forecast.
 """
+
 from typing import List, Optional, Tuple, Union
 
 from darts.logging import get_logger

@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 """This module contains basic data cleaning functions"""
+
 from typing import Union
 
 import pandas as pd
