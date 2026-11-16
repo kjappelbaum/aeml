@@ -1,17 +1,16 @@
 # -*- coding: utf-8 -*-
-from curses.ascii import TAB
 import os
 import pickle
 import time
 from collections import defaultdict
 from copy import deepcopy
+from curses.ascii import TAB
 
 import click
 import joblib
 import numpy as np
 import pandas as pd
 from darts import TimeSeries
-
 
 from aeml.utils import choose_index
 
@@ -68,25 +67,20 @@ MEAS_COLUMNS = [
 FEAT_NUM_MAPPING = dict(zip(MEAS_COLUMNS, [str(i) for i in range(len(MEAS_COLUMNS))]))
 UPDATE_MAPPING = {
     "amp": {
-        "scaler": joblib.load(
-            "20220312_y_transformer"
-        ),
+        "scaler": joblib.load("20220312_y_transformer"),
         "model": joblib.load("20220312_model_all_data_0"),
         "name": ["2-Amino-2-methylpropanol C4H11NO"],
     },
     "pz": {
-        "scaler": joblib.load(
-            "20220312_y_transformer"
-        ),
+        "scaler": joblib.load("20220312_y_transformer"),
         "model": joblib.load("20220312_model_all_data_1"),
-        "name": [ "Piperazine C4H10N2"],
+        "name": ["Piperazine C4H10N2"],
     },
 }
-SCALER = joblib.load(
-    "20220312_x_transformer"
-)
+SCALER = joblib.load("20220312_x_transformer")
 
-TARGETS_clean = ['2-Amino-2-methylpropanol C4H11NO', 'Piperazine C4H10N2'] 
+TARGETS_clean = ["2-Amino-2-methylpropanol C4H11NO", "Piperazine C4H10N2"]
+
 
 # making the input one item longer as "safety margin"
 def calculate_initialization_percentage(timeseries_length: int, input_sequence_length: int = 61):
@@ -101,10 +95,10 @@ def run_update_historical_forecast(df, x, target="amine"):
 
     predictions = model_dict["model"].historical_forecasts(
         past_covariates=x,
-        series=y[model_dict['name']],
+        series=y[model_dict["name"]],
         start=calculate_initialization_percentage(len(y)),
         forecast_horizon=1,
-        retrain=False
+        retrain=False,
     )
     return predictions
 
@@ -120,7 +114,7 @@ def run_update_forecast(df, x, target="amine"):
 
     predictions = model_dict["model"].forecast(
         past_covariates=x,
-        series=y_past[model_dict['name']],
+        series=y_past[model_dict["name"]],
         n=len(x) - len(y_past),
     )
     return predictions
